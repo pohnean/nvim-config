@@ -4,6 +4,19 @@ return {
   event = 'VeryLazy',
   tag = '*',
   requires = 'nvim-tree/nvim-web-devicons',
+  opts = {
+    options = {
+      offsets = {
+        {
+          filetype = 'neo-tree',
+          text = 'File Explorer',
+          highlight = 'Directory',
+          text_align = 'left',
+          separator = true,
+        },
+      },
+    },
+  },
   config = function(_, opts)
     require('bufferline').setup(opts)
     -- Fix bufferline when restoring a session
