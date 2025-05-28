@@ -91,7 +91,7 @@ vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
-vim.g.have_nerd_font = false
+vim.g.have_nerd_font = true
 
 -- [[ Setting options ]]
 -- See `:help vim.o`
@@ -102,7 +102,7 @@ vim.g.have_nerd_font = false
 vim.o.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.o.relativenumber = true
+vim.o.relativenumber = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.o.mouse = 'a'
@@ -117,6 +117,14 @@ vim.o.showmode = false
 vim.schedule(function()
   vim.o.clipboard = 'unnamedplus'
 end)
+
+-- Indenting
+vim.opt.smartindent = true
+vim.opt.autoindent = true
+vim.opt.smarttab = true
+vim.opt.expandtab = true
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
 
 -- Enable break indent
 vim.o.breakindent = true
@@ -165,6 +173,12 @@ vim.o.scrolloff = 10
 -- instead raise a dialog asking if you wish to save the current file(s)
 -- See `:help 'confirm'`
 vim.o.confirm = true
+
+-- Word wrap
+vim.o.wrap = false
+
+-- Disable substitute keybind
+vim.keymap.set({ 'n', 'x' }, 's', '<Nop>')
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
@@ -655,6 +669,27 @@ require('lazy').setup({
         },
       }
 
+      local function has_eslint_config(root_dir)
+        local eslint_files = {
+          '.eslintrc',
+          '.eslintrc.js',
+          '.eslintrc.json',
+          '.eslintrc.cjs',
+          '.eslintrc.yaml',
+          '.eslintrc.yml',
+          'eslint.config.js',
+          'eslint.config.mjs',
+          'eslint.config.cjs',
+          'eslint.config.ts',
+        }
+        for _, file in ipairs(eslint_files) do
+          if vim.fn.filereadable(vim.fs.joinpath(root_dir, file)) == 1 then
+            return true
+          end
+        end
+        return false
+      end
+
       -- LSP servers and clients are able to communicate to each other what features they support.
       --  By default, Neovim doesn't support everything that is in the LSP specification.
       --  When you add blink.cmp, luasnip, etc. Neovim now has *more* capabilities.
@@ -697,6 +732,20 @@ require('lazy').setup({
               -- diagnostics = { disable = { 'missing-fields' } },
             },
           },
+        },
+        eslint = {
+          on_attach = function(client)
+            local root = client.config.root_dir
+            local has_config = has_eslint_config(root)
+            client.server_capabilities.documentFormattingProvider = has_config
+          end,
+        },
+        vtsls = {
+          on_attach = function(client)
+            local root = client.config.root_dir
+            local has_config = has_eslint_config(root)
+            client.server_capabilities.documentFormattingProvider = not has_config
+          end,
         },
       }
 
@@ -772,7 +821,8 @@ require('lazy').setup({
         -- python = { "isort", "black" },
         --
         -- You can use 'stop_after_first' to run the first available formatter from the list
-        -- javascript = { "prettierd", "prettier", stop_after_first = true },
+        javascript = { 'prettierd', 'prettier', stop_after_first = true },
+        javascriptreact = {},
       },
     },
   },
@@ -976,7 +1026,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.debug',
   -- require 'kickstart.plugins.indent_line',
   -- require 'kickstart.plugins.lint',
-  -- require 'kickstart.plugins.autopairs',
+  require 'kickstart.plugins.autopairs',
   -- require 'kickstart.plugins.neo-tree',
   -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
