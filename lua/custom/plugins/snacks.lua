@@ -12,9 +12,9 @@ return {
     {
       '<leader>gg',
       function()
-        Snacks.terminal { 'gitui' }
+        Snacks.terminal { 'lazygit' }
       end,
-      desc = 'GitUI (cwd)',
+      desc = 'Lazygit (cwd)',
     },
   },
 }
