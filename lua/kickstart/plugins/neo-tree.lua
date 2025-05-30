@@ -11,11 +11,13 @@ return {
   },
   lazy = false,
   keys = {
-    { '\\', ':Neotree toggle left reveal_force_cwd<cr>', desc = 'NeoTree reveal', silent = true },
+    { '\\', ':Neotree toggle float reveal_force_cwd<cr>', desc = 'NeoTree reveal', silent = true },
   },
   opts = {
     filesystem = {
+      hijack_netrw_behavior = 'disabled',
       window = {
+        position = 'float',
         mappings = {
           ['\\'] = 'close_window',
         },

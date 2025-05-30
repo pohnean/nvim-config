@@ -247,14 +247,30 @@ vim.keymap.set('n', '<S-l>', '<cmd>bnext<cr>', { desc = 'Next Buffer' })
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
--- Restore session on startup
+-- Disable newrw on open
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+-- Show telescope find_
 vim.api.nvim_create_autocmd('VimEnter', {
   callback = function()
-    if vim.fn.argv(0) == '' then
-      require('persistence').load()
+    local argv = vim.fn.argv(0)
+    local is_dir = vim.fn.isdirectory(argv) == 1
+
+    if is_dir then
+      require('telescope.builtin').find_files()
     end
   end,
 })
+
+-- Restore session on startup
+-- vim.api.nvim_create_autocmd('VimEnter', {
+--   callback = function()
+--     if vim.fn.argv(0) == '' then
+--       require('persistence').load()
+--     end
+--   end,
+-- })
 
 -- Highlight when yanking (copying) text
 --  Try it with `yap` in normal mode
