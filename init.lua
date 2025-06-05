@@ -599,7 +599,18 @@ require('lazy').setup({
 
           -- Execute a code action, usually your cursor needs to be on top of an error
           -- or a suggestion from your LSP for this to activate.
-          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })
+          map('<leader>ca', vim.lsp.buf.code_action, '[C]ode [a]ction', { 'n', 'x' })
+
+          -- Execute a source action
+          map('<leader>cA', function()
+            vim.lsp.buf.code_action {
+              apply = true,
+              context = {
+                only = { 'source' },
+                diagnostics = {},
+              },
+            }
+          end, '[C]ode [A]ctions (file)', { 'n', 'x' })
 
           -- Find references for the word under your cursor.
           map('grr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
