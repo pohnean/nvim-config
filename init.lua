@@ -772,7 +772,8 @@ require('lazy').setup({
             client.server_capabilities.documentFormattingProvider = has_config
           end,
         },
-        ts_ls = {
+        vtsls = {
+          root_dir = require('lspconfig.util').root_pattern('tsconfig.json', 'package.json'),
           filetypes = {
             'javascript',
             'javascriptreact',
@@ -790,26 +791,45 @@ require('lazy').setup({
             },
           },
           settings = {
-            -- Required for the plugin to work correctly
+            complete_function_calls = true,
+            vtsls = {
+              enableMoveToFileCodeAction = true,
+              autoUseWorkspaceTsdk = true,
+              experimental = {
+                maxInlayHintLength = 30,
+                completion = {
+                  enableServerSideFuzzyMatch = true,
+                },
+              },
+            },
             typescript = {
-              preferences = {
-                importModuleSpecifierPreference = 'non-relative',
+              updateImportsOnFileMove = { enabled = 'always' },
+              suggest = {
+                completeFunctionCalls = true,
+              },
+              inlayHints = {
+                enumMemberValues = { enabled = true },
+                functionLikeReturnTypes = { enabled = true },
+                parameterNames = { enabled = 'literals' },
+                parameterTypes = { enabled = true },
+                propertyDeclarationTypes = { enabled = true },
+                variableTypes = { enabled = false },
               },
             },
           },
-          on_attach = function(client)
-            local root = client.config.root_dir
-            local has_config = has_eslint_config(root)
-            client.server_capabilities.documentFormattingProvider = not has_config
-          end,
+          -- on_attach = function(client)
+          --   local root = client.config.root_dir
+          --   local has_config = has_eslint_config(root)
+          --   client.server_capabilities.documentFormattingProvider = not has_config
+          -- end,
         },
-        vue_ls = {
-          on_attach = function(client)
-            local root = client.config.root_dir
-            local has_config = has_eslint_config(root)
-            client.server_capabilities.documentFormattingProvider = not has_config
-          end,
-        },
+        -- vue_ls = {
+        --   on_attach = function(client)
+        --     local root = client.config.root_dir
+        --     local has_config = has_eslint_config(root)
+        --     client.server_capabilities.documentFormattingProvider = not has_config
+        --   end,
+        -- },
         tailwindcss = {},
       }
 
