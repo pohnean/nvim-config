@@ -740,6 +740,8 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local vue_plugin_location = '~/.local/share/nvim/mason/packages/vue-language-server/node_modules/@vue/language-server'
 
+      local util = require 'lspconfig.util'
+
       local servers = {
         -- clangd = {},
         -- gopls = {},
@@ -751,6 +753,15 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`ts_ls`) will work just fine
+        intelephense = {
+          settings = {
+            intelephense = {
+              files = {
+                maxSize = 1000000,
+              },
+            },
+          },
+        },
         lua_ls = {
           -- cmd = { ... },
           -- filetypes = { ... },
@@ -772,8 +783,8 @@ require('lazy').setup({
             client.server_capabilities.documentFormattingProvider = has_config
           end,
         },
-        vtsls = {
-          root_dir = require('lspconfig.util').root_pattern('tsconfig.json', 'package.json'),
+        ts_ls = {
+          root_markers = { 'tsconfig.json', 'package.json' },
           filetypes = {
             'javascript',
             'javascriptreact',
@@ -791,37 +802,18 @@ require('lazy').setup({
             },
           },
           settings = {
-            complete_function_calls = true,
-            vtsls = {
-              enableMoveToFileCodeAction = true,
-              autoUseWorkspaceTsdk = true,
-              experimental = {
-                maxInlayHintLength = 30,
-                completion = {
-                  enableServerSideFuzzyMatch = true,
-                },
-              },
-            },
+            -- Required for the plugin to work correctly
             typescript = {
-              updateImportsOnFileMove = { enabled = 'always' },
-              suggest = {
-                completeFunctionCalls = true,
-              },
-              inlayHints = {
-                enumMemberValues = { enabled = true },
-                functionLikeReturnTypes = { enabled = true },
-                parameterNames = { enabled = 'literals' },
-                parameterTypes = { enabled = true },
-                propertyDeclarationTypes = { enabled = true },
-                variableTypes = { enabled = false },
+              preferences = {
+                importModuleSpecifierPreference = 'non-relative',
               },
             },
           },
-          -- on_attach = function(client)
-          --   local root = client.config.root_dir
-          --   local has_config = has_eslint_config(root)
-          --   client.server_capabilities.documentFormattingProvider = not has_config
-          -- end,
+          on_attach = function(client)
+            local root = client.config.root_dir
+            local has_config = has_eslint_config(root)
+            client.server_capabilities.documentFormattingProvider = not has_config
+          end,
         },
         -- vue_ls = {
         --   on_attach = function(client)
@@ -857,6 +849,7 @@ require('lazy').setup({
         'stylua', -- Used to format Lua code
         'vue-language-server',
         'typescript-language-server',
+        'intelephense', -- PHP LSP server
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -866,20 +859,20 @@ require('lazy').setup({
         vim.lsp.config(server_name, config)
       end
 
-      -- require('mason-lspconfig').setup {
-      --   ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
-      --   automatic_installation = false,
-      --   handlers = {
-      --     function(server_name)
-      --       local server = servers[server_name] or {}
-      --       -- This handles overriding only values explicitly passed
-      --       -- by the server configuration above. Useful when disabling
-      --       -- certain features of an LSP (for example, turning off formatting for ts_ls)
-      --       server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-      --       require('lspconfig')[server_name].setup(server)
-      --     end,
-      --   },
-      -- }
+      require('mason-lspconfig').setup {
+        ensure_installed = {}, -- explicitly set to an empty table (Kickstart populates installs via mason-tool-installer)
+        automatic_installation = false,
+        handlers = {
+          function(server_name)
+            local server = servers[server_name] or {}
+            -- This handles overriding only values explicitly passed
+            -- by the server configuration above. Useful when disabling
+            -- certain features of an LSP (for example, turning off formatting for ts_ls)
+            server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+            require('lspconfig')[server_name].setup(server)
+          end,
+        },
+      }
     end,
   },
 
@@ -924,6 +917,7 @@ require('lazy').setup({
         typescript = {},
         typescriptreact = {},
         vue = {},
+        php = {},
       },
     },
   },
@@ -1091,7 +1085,7 @@ require('lazy').setup({
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
     opts = {
-      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'graphql', 'sql' },
+      ensure_installed = { 'bash', 'c', 'diff', 'html', 'lua', 'luadoc', 'markdown', 'markdown_inline', 'query', 'vim', 'vimdoc', 'graphql', 'sql', 'php' },
       -- Autoinstall languages that are not installed
       auto_install = true,
       highlight = {
