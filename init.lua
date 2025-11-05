@@ -740,6 +740,39 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local vue_plugin_location = '~/.local/share/nvim/mason/packages/vue-language-server/node_modules/@vue/language-server'
 
+      local vue_language_server_path = vim.fn.expand '$MASON/packages' .. '/vue-language-server' .. '/node_modules/@vue/language-server'
+
+      local tsserver_filetypes = { 'typescript', 'javascript', 'javascriptreact', 'typescriptreact', 'vue' }
+      local vue_plugin = {
+        name = '@vue/typescript-plugin',
+        location = vue_language_server_path,
+        languages = { 'vue' },
+        configNamespace = 'typescript',
+      }
+      local vtsls_config = {
+        settings = {
+          vtsls = {
+            tsserver = {
+              globalPlugins = {
+                vue_plugin,
+              },
+            },
+          },
+        },
+        filetypes = tsserver_filetypes,
+      }
+
+      local ts_ls_config = {
+        root_markers = { 'tsconfig.json', 'package.json' },
+        init_options = {
+          plugins = {
+            vue_plugin,
+          },
+        },
+        filetypes = tsserver_filetypes,
+      }
+      local vue_ls_config = {}
+
       local util = require 'lspconfig.util'
 
       local servers = {
@@ -783,45 +816,9 @@ require('lazy').setup({
             client.server_capabilities.documentFormattingProvider = has_config
           end,
         },
-        ts_ls = {
-          root_markers = { 'tsconfig.json', 'package.json' },
-          filetypes = {
-            'javascript',
-            'javascriptreact',
-            'typescript',
-            'typescriptreact',
-            'vue',
-          },
-          init_options = {
-            plugins = {
-              {
-                name = '@vue/typescript-plugin',
-                location = vue_plugin_location,
-                languages = { 'vue' },
-              },
-            },
-          },
-          settings = {
-            -- Required for the plugin to work correctly
-            typescript = {
-              preferences = {
-                importModuleSpecifierPreference = 'non-relative',
-              },
-            },
-          },
-          on_attach = function(client)
-            local root = client.config.root_dir
-            local has_config = has_eslint_config(root)
-            client.server_capabilities.documentFormattingProvider = not has_config
-          end,
-        },
-        -- vue_ls = {
-        --   on_attach = function(client)
-        --     local root = client.config.root_dir
-        --     local has_config = has_eslint_config(root)
-        --     client.server_capabilities.documentFormattingProvider = not has_config
-        --   end,
-        -- },
+        vtsls = vtsls_config,
+        ts_ls = ts_ls_config,
+        vue_ls = vue_ls_config,
         tailwindcss = {},
       }
 
