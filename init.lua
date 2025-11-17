@@ -770,6 +770,11 @@ require('lazy').setup({
           },
         },
         filetypes = tsserver_filetypes,
+        on_attach = function(client)
+          local root = client.config.root_dir
+          local has_config = has_eslint_config(root)
+          client.server_capabilities.documentFormattingProvider = not has_config
+        end,
       }
       local vue_ls_config = {}
 
@@ -816,7 +821,46 @@ require('lazy').setup({
             client.server_capabilities.documentFormattingProvider = has_config
           end,
         },
-        vtsls = vtsls_config,
+        -- ts_ls = {
+        --   root_markers = { 'tsconfig.json', 'package.json' },
+        --   filetypes = {
+        --     'javascript',
+        --     'javascriptreact',
+        --     'typescript',
+        --     'typescriptreact',
+        --     'vue',
+        --   },
+        --   init_options = {
+        --     plugins = {
+        --       {
+        --         name = '@vue/typescript-plugin',
+        --         location = vue_plugin_location,
+        --         languages = { 'vue' },
+        --       },
+        --     },
+        --   },
+        --   settings = {
+        --     -- Required for the plugin to work correctly
+        --     typescript = {
+        --       preferences = {
+        --         importModuleSpecifierPreference = 'non-relative',
+        --       },
+        --     },
+        --   },
+        --   on_attach = function(client)
+        --     local root = client.config.root_dir
+        --     local has_config = has_eslint_config(root)
+        --     client.server_capabilities.documentFormattingProvider = not has_config
+        --   end,
+        -- },
+        -- vue_ls = {
+        --   -- on_attach = function(client)
+        --   --   local root = client.config.root_dir
+        --   --   local has_config = has_eslint_config(root)
+        --   --   client.server_capabilities.documentFormattingProvider = not has_config
+        --   -- end,
+        -- },
+        -- vtsls = vtsls_config,
         ts_ls = ts_ls_config,
         vue_ls = vue_ls_config,
         tailwindcss = {},
