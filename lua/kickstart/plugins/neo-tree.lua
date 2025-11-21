@@ -15,6 +15,21 @@ return {
   },
   opts = {
     filesystem = {
+      -- find_command = 'fd',
+      -- find_args = {
+      --   '--exclude',
+      --   '.ignore',
+      --   '--hidden',
+      --   '--no-ignore', -- Don't use .ignore files, but still respects .gitignore
+      -- },
+      filtered_items = {
+        respect_gitignore = true,
+        hide_dotfiles = false,
+        hide_gitignored = false, -- Dim but don't hide gitignored files
+        ignore_files = {
+          '.gitignore',
+        },
+      },
       hijack_netrw_behavior = 'disabled',
       window = {
         position = 'float',
