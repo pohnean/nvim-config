@@ -197,7 +197,7 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 --
 -- NOTE: This won't work in all terminal emulators/tmux/etc. Try your own mapping
 -- or just use <C-\><C-n> to exit terminal mode
-vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n>', { desc = 'Exit terminal mode' })
+vim.keymap.set('t', '<Esc><Esc>', '<C-\\><C-n><cmd>FloatermHide<CR>', { desc = 'Hide floating terminal' })
 
 -- TIP: Disable arrow keys in normal mode
 -- vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
@@ -225,6 +225,11 @@ vim.keymap.set('v', '<C-Up>', ":m '<-2<cr>gv=gv", { desc = 'Move up' })
 -- Save shortcut
 vim.keymap.set('n', '<C-s>', ':w<CR>', { noremap = true, silent = true })
 vim.keymap.set('i', '<C-s>', '<Esc>:w<CR>', { noremap = true, silent = true })
+
+-- Keymaps for terminal (using floaterm)
+vim.keymap.set('n', '<leader>t', '<cmd>FloatermNew<CR>', { desc = 'Open floating terminal' })
+vim.keymap.set('n', '<leader>tt', '<cmd>FloatermToggle<CR>', { desc = 'Toggle floating terminal' })
+vim.keymap.set('t', '<leader>tt', '<C-\\><C-n><cmd>FloatermToggle<CR>', { desc = 'Toggle floating terminal' })
 
 -- Marks
 -- vim.keymap.set('n', '<C-1>', 'mA')
@@ -300,6 +305,18 @@ rtp:prepend(lazypath)
 require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'NMAC427/guess-indent.nvim', -- Detect tabstop and shiftwidth automatically
+  
+  -- Floating terminal
+  {
+    'voldikss/vim-floaterm',
+    config = function()
+      -- Floaterm configuration
+      vim.g.floaterm_width = 0.8
+      vim.g.floaterm_height = 0.8
+      vim.g.floaterm_position = 'center'
+      vim.g.floaterm_borderchars = '─│─│╭╮╯╰'
+    end,
+  },
 
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -400,7 +417,7 @@ require('lazy').setup({
         { '<leader>b', group = '[B]uffer' },
         { '<leader>c', group = '[C]ode' },
         { '<leader>s', group = '[S]earch' },
-        { '<leader>t', group = '[T]oggle' },
+        { '<leader>t', group = '[T]erminal' },
         { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
       },
     },
@@ -1169,7 +1186,7 @@ require('lazy').setup({
   -- require 'kickstart.plugins.lint',
   require 'kickstart.plugins.autopairs',
   require 'kickstart.plugins.neo-tree',
-  -- require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
+  require 'kickstart.plugins.gitsigns', -- adds gitsigns recommend keymaps
 
   -- NOTE: The import below can automatically add your own plugins, configuration, etc from `lua/custom/plugins/*.lua`
   --    This is the easiest way to modularize your config.
