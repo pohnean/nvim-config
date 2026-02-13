@@ -1,24 +1,20 @@
 return {
-  'greggh/claude-code.nvim',
-  dependencies = {
-    'nvim-lua/plenary.nvim',
+  'coder/claudecode.nvim',
+  event = 'VeryLazy',
+  dependencies = { 'folke/snacks.nvim' },
+  config = true,
+  opts = {
+    terminal = {
+      provider = 'external',
+      provider_opts = {
+        external_terminal_cmd = 'tmux split-window -h %s',
+      },
+    },
   },
-  config = function()
-    require('claude-code').setup {
-      window = {
-        -- position = 'float',
-        -- float = {
-        --   width = '80%',
-        --   height = '80%',
-        --   border = 'rounded',
-        -- },
-      },
-      keymaps = {
-        toggle = {
-          normal = '<leader>ac',
-          terminal = '<leader>ac',
-        },
-      },
-    }
-  end,
+  keys = {
+    { '<leader>a', nil, desc = 'AI/Claude Code' },
+    { '<leader>ac', '<cmd>ClaudeCode<cr>', desc = 'Toggle Claude' },
+    { '<leader>ab', '<cmd>ClaudeCodeAdd %<cr>', desc = 'Add buffer to Claude' },
+    { '<leader>as', '<cmd>ClaudeCodeSend<cr>', mode = 'v', desc = 'Send to Claude' },
+  },
 }
